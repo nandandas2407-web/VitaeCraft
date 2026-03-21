@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VitaeCraft — Resume Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/app.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+</head>
+<body>
+<div id="toast"><span id="toastIco"></span><span id="toastTxt"></span></div>
+
+<header class="topbar">
+  <div class="brand">
+    <a href="index.html" class="brand-link">
+      <div class="brand-mark">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+          <rect x="2" y="2" width="8" height="11" rx="1.5" fill="currentColor" opacity=".9"/>
+          <rect x="12" y="2" width="8" height="5" rx="1.5" fill="currentColor" opacity=".6"/>
+          <rect x="12" y="9" width="8" height="11" rx="1.5" fill="currentColor" opacity=".8"/>
+          <rect x="2" y="15" width="8" height="5" rx="1.5" fill="currentColor" opacity=".5"/>
+        </svg>
+      </div>
+      <span class="brand-name">VitaeCraft</span>
+    </a>
+    <div class="brand-sep"></div>
+    <div class="level-tabs">
+      <button class="level-tab active" data-lv="fresher" onclick="setLevel('fresher')">Fresher</button>
+      <button class="level-tab" data-lv="intermediate" onclick="setLevel('intermediate')">Mid</button>
+      <button class="level-tab" data-lv="senior" onclick="setLevel('senior')">Senior</button>
+    </div>
+  </div>
+  <div class="topbar-center">
+    <div class="prof-pill">
+      <div class="prof-dot"></div>
+      <select id="profSel" onchange="setProf(this.value)">
+        <option value="developer">Developer</option>
+        <option value="designer">Designer</option>
+        <option value="teacher">Teacher</option>
+        <option value="marketing">Marketing</option>
+        <option value="finance">Finance</option>
+        <option value="general">General</option>
+      </select>
+    </div>
+    <div class="ats-pill" id="atsModePill" onclick="toggleAtsMode()">
+      <input type="checkbox" id="atsModeChk" style="display:none"/>
+      <span class="ats-ico">◉</span>
+      <span class="ats-lbl">ATS Mode</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="tbtn tbtn-ghost" onclick="openSnapPanel()">📸 Snapshots</button>
+    <button class="tbtn tbtn-ghost" onclick="openJdPanel()">🔍 JD Match</button>
+    <button class="tbtn tbtn-ghost" onclick="openAtsPanel()">🎯 ATS Score</button>
+    <button class="tbtn tbtn-ghost" onclick="demoFill()">⚡ Demo</button>
+    <button class="tbtn tbtn-ghost" onclick="resetAll()">↺</button>
+    <button class="tbtn tbtn-lime" onclick="exportPDF()">↓ PDF</button>
+    <button class="tbtn tbtn-ghost mob-toggle" onclick="togMob()">👁 Preview</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <div class="form-panel">
+    <div class="form-scroll">
+
+      <div class="acc" id="acc-basics">
+        <div class="acc-hd open" onclick="togAcc('basics')">
+          <span class="acc-label"><span class="acc-ico">👤</span>Personal Info</span>
+          <span class="acc-valid" id="vbadge-basics"></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd open" id="acbd-basics">
+          <div class="photo-upload-row">
+            <div class="photo-avatar" id="photoAvatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+            <div class="photo-upload-info">
+              <div class="photo-upload-name" id="photoName">No photo uploaded</div>
+              <div style="font-size:10px;color:var(--fg3);margin-top:2px">JPG/PNG · max 2MB · optional</div>
+            </div>
+            <label class="tbtn tbtn-ghost tbtn-sm photo-upload-label">
+              Upload
+              <input type="file" accept="image/*" style="display:none" onchange="handlePhoto(this)"/>
+            </label>
+          </div>
+          <div class="photo-toggle-row">
+            <label class="sw"><input type="checkbox" id="showPhoto" onchange="render()"/><span class="tr2"></span></label>
+            Show photo on resume
+          </div>
+          <div class="form-sep"></div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Full Name <span class="req-star">*</span></label><input id="f-name" placeholder="Alex Rivera" oninput="onFld(this,'basics')" autocomplete="name"/></div>
+            <div class="fg"><label class="fl">Job Title <span class="req-star">*</span></label><input id="f-title" placeholder="Software Engineer" oninput="onFld(this,'basics')"/></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Email <span class="req-star">*</span></label><input id="f-email" type="email" placeholder="alex@email.com" oninput="onFld(this,'basics')"/></div>
+            <div class="fg"><label class="fl">Phone</label><input id="f-phone" placeholder="+1 555-000-0000" oninput="render()"/></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label class="fl">Location</label><input id="f-loc" placeholder="San Francisco, CA" oninput="render()"/></div>
+            <div class="fg"><label class="fl">Website <span class="fl-opt">(opt)</span></label><input id="f-web" placeholder="alexrivera.dev" oninput="render()"/></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label class="fl">LinkedIn</label><input id="f-li" placeholder="linkedin.com/in/..." oninput="render()"/></div>
+            <div class="fg"><label class="fl">GitHub</label><input id="f-gh" placeholder="github.com/..." oninput="render()"/></div>
+          </div>
+          <div class="fg"><label class="fl">References <span class="fl-opt">(opt)</span></label><input id="f-refs" placeholder="Available upon request" oninput="render()"/></div>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-summary">
+        <div class="acc-hd" onclick="togAcc('summary')">
+          <span class="acc-label"><span class="acc-ico">📝</span>Professional Summary</span>
+          <span class="acc-valid" id="vbadge-summary"></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-summary">
+          <div class="fg">
+            <label class="fl">Summary <span class="req-star">*</span></label>
+            <textarea id="f-summary" rows="5" placeholder="2–4 sentences about your background, key strengths, and career goal. Tailor to each role." oninput="onFld(this,'summary');updateWordCount(this,'wc-sum')"></textarea>
+            <div style="display:flex;justify-content:space-between;margin-top:3px">
+              <span class="hint">Aim for 40–80 words. Lead with your strongest qualifier.</span>
+              <span class="wc" id="wc-sum">0 words</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-skills">
+        <div class="acc-hd" onclick="togAcc('skills')">
+          <span class="acc-label"><span class="acc-ico">⚡</span>Skills <span id="skillCountBadge" class="acc-count"></span></span>
+          <span class="acc-valid" id="vbadge-skills"></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-skills">
+          <div class="skill-cats-wrap" id="skillWrap"></div>
+          <button class="tbtn tbtn-ghost tbtn-sm" style="margin-top:8px" onclick="addSkCat()">+ Add Category</button>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-exp">
+        <div class="acc-hd" onclick="togAcc('exp')">
+          <span class="acc-label"><span class="acc-ico">💼</span>Work Experience <span id="expCountBadge" class="acc-count"></span></span>
+          <span class="acc-valid" id="vbadge-exp"></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-exp">
+          <div id="expList"></div>
+          <button class="tbtn tbtn-ghost tbtn-sm" onclick="addExp()">+ Add Experience</button>
+          <div class="hint" id="expHint"></div>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-proj">
+        <div class="acc-hd" onclick="togAcc('proj')">
+          <span class="acc-label"><span class="acc-ico">🚀</span>Projects <span id="projCountBadge" class="acc-count"></span></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-proj">
+          <div id="projList"></div>
+          <button class="tbtn tbtn-ghost tbtn-sm" onclick="addProj()">+ Add Project</button>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-edu">
+        <div class="acc-hd" onclick="togAcc('edu')">
+          <span class="acc-label"><span class="acc-ico">🎓</span>Education <span id="eduCountBadge" class="acc-count"></span></span>
+          <span class="acc-valid" id="vbadge-edu"></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-edu">
+          <div id="eduList"></div>
+          <button class="tbtn tbtn-ghost tbtn-sm" onclick="addEdu()">+ Add Education</button>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-cert">
+        <div class="acc-hd" onclick="togAcc('cert')">
+          <span class="acc-label"><span class="acc-ico">🏆</span>Certifications <span id="certCountBadge" class="acc-count"></span></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-cert">
+          <div id="certList"></div>
+          <button class="tbtn tbtn-ghost tbtn-sm" onclick="addCert()">+ Add Certification</button>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-ach">
+        <div class="acc-hd" onclick="togAcc('ach')">
+          <span class="acc-label"><span class="acc-ico">🌟</span>Achievements <span id="achCountBadge" class="acc-count"></span></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-ach">
+          <div id="achList"></div>
+          <button class="tbtn tbtn-ghost tbtn-sm" onclick="addAch()">+ Add Achievement</button>
+        </div>
+      </div>
+
+      <div class="acc" id="acc-lang">
+        <div class="acc-hd" onclick="togAcc('lang')">
+          <span class="acc-label"><span class="acc-ico">🌐</span>Languages <span id="langCountBadge" class="acc-count"></span></span>
+          <span class="acc-arrow">▼</span>
+        </div>
+        <div class="acc-bd" id="acbd-lang">
+          <div id="langList"></div>
+          <button class="tbtn tbtn-ghost tbtn-sm" onclick="addLang()">+ Add Language</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="preview-panel" id="previewPanel">
+    <div class="preview-toolbar">
+      <div class="tpl-row" id="tplRow">
+        <button class="tpl-chip on" data-tpl="modern" onclick="setTpl('modern')">Modern</button>
+        <button class="tpl-chip" data-tpl="classic" onclick="setTpl('classic')">Classic</button>
+        <button class="tpl-chip" data-tpl="minimal" onclick="setTpl('minimal')">Minimal</button>
+        <button class="tpl-chip" data-tpl="executive" onclick="setTpl('executive')">Executive</button>
+        <button class="tpl-chip" data-tpl="compact" onclick="setTpl('compact')">Compact</button>
+        <button class="tpl-chip" data-tpl="creative" onclick="setTpl('creative')">Creative</button>
+      </div>
+      <div class="preview-toolbar-right">
+        <div class="zoom-ctrl">
+          <button class="zbtn" onclick="zoomChange(-0.1)">−</button>
+          <span id="zoomLbl">100%</span>
+          <button class="zbtn" onclick="zoomChange(+0.1)">+</button>
+        </div>
+        <button class="tbtn tbtn-ghost tbtn-sm" onclick="openImprovePanel()">✨ Improve Bullets</button>
+      </div>
+    </div>
+    <div class="preview-scroll" id="previewScroll">
+      <div class="rv-wrap" id="rvWrap">
+        <div class="rv tpl-modern" id="resumeView"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ovl" id="ovlAts">
+  <div class="drawer">
+    <button class="drawer-x" onclick="closeOvl('ovlAts')">✕</button>
+    <div class="drawer-title">🎯 ATS Score Report</div>
+    <div class="drawer-sub">How well does your resume pass Applicant Tracking Systems?</div>
+    <div class="ats-gate-note" id="atsGateNote"></div>
+    <div class="ats-big-num" id="atsBigNum">—</div>
+    <div class="ats-big-sub" id="atsBigSub">Run analysis to see your score</div>
+    <div class="ats-cats" id="atsCats"></div>
+    <div class="sug-list" id="sugList"></div>
+    <button class="tbtn tbtn-lime" style="width:100%;margin-top:12px" onclick="runAts()">Analyze Resume</button>
+  </div>
+</div>
+
+<div class="ovl" id="ovlJd">
+  <div class="drawer">
+    <button class="drawer-x" onclick="closeOvl('ovlJd')">✕</button>
+    <div class="drawer-title">🔍 Job Description Matcher</div>
+    <div class="drawer-sub">Paste a job description to see which keywords you're missing.</div>
+    <textarea class="jd-ta" id="jdTa" placeholder="Paste the full job description here..."></textarea>
+    <button class="tbtn tbtn-lime" style="width:100%" onclick="runJdMatch()">Analyze Match</button>
+    <div id="jdResults" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<div class="ovl" id="ovlSnap">
+  <div class="drawer">
+    <button class="drawer-x" onclick="closeOvl('ovlSnap')">✕</button>
+    <div class="drawer-title">📸 Snapshots</div>
+    <div class="drawer-sub">Save named versions of your resume and restore them any time.</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input id="snapNameInp" class="snap-inp" placeholder="Snapshot name…" style="flex:1"/>
+      <button class="tbtn tbtn-lime" onclick="saveSnap()">Save</button>
+    </div>
+    <div id="snapList" class="snap-list"></div>
+  </div>
+</div>
+
+<div class="ovl" id="ovlImprove">
+  <div class="drawer">
+    <button class="drawer-x" onclick="closeOvl('ovlImprove')">✕</button>
+    <div class="drawer-title">✨ Bullet Point Improver</div>
+    <div class="drawer-sub">Paste a weak bullet point and get 3 stronger, metric-driven versions.</div>
+    <div class="fg">
+      <label class="fl">Your bullet</label>
+      <textarea id="bulletInp" rows="3" placeholder="e.g. Worked on the company website to make it faster"></textarea>
+    </div>
+    <button class="tbtn tbtn-lime" style="width:100%;margin-top:10px" onclick="runImprove()">✨ Improve It</button>
+    <div class="improve-out" id="improveOut"></div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/render.js"></script>
+<script src="js/form.js"></script>
+<script src="js/panels.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
