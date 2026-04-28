@@ -40,6 +40,7 @@
 </div>
 
 ---
+## Ready Preview -
 
 ## What is VitaeCraft?
 
@@ -326,37 +327,6 @@ User types in form
 
 ---
 
-## 🌐 Deploy
-
-VitaeCraft is a static project. It deploys anywhere in seconds.
-
-### GitHub Pages (Recommended)
-
-1. Fork this repository
-2. Go to **Settings → Pages**
-3. Set source to **Deploy from branch → `main` → `/ (root)`**
-4. Your site is live at `https://<username>.github.io/VitaeCraft/`
-
-### Netlify (Drag & Drop)
-
-1. Download this repo as a `.zip`
-2. Go to [netlify.com/drop](https://app.netlify.com/drop)
-3. Drag the unzipped folder — deployed instantly
-
-### Vercel
-
-```bash
-npx vercel --yes
-# Done. No config file needed.
-```
-
-### Self-host
-
-Copy all files to any web server or CDN. No server-side processing. No build step. Works as-is.
-
-<br/>
-
----
 
 ## 🔧 Customization
 
